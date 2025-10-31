@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from models import load_empire_data, load_falcon_data, load_universe_data
+from app.millenium_router.loaders import load_empire_data, load_falcon_data, load_universe_data
 
 
 logging.basicConfig(
