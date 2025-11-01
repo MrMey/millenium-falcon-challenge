@@ -1,64 +1,60 @@
 import json
 import sqlite3
 import os
+import logging
 from collections import defaultdict
-from dataclasses import dataclass
+from pydantic import ValidationError
+from .models import Empire, Falcon
 
-@dataclass(frozen=True)
-class FalconData:
-    autonomy: int
-    departure: str
-    arrival: str
-    routes_db: str
+logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True)
-class EmpireData:
-    countdown: int
-    bounty_hunters: set
-
-
-def load_falcon_data(falcon_path) -> FalconData:
-    with open(falcon_path) as f:
-        falcon_data = json.load(f)
-    
-    return FalconData(
-        falcon_data['autonomy'],
-        falcon_data['departure'],
-        falcon_data['arrival'],
-        falcon_data['routes_db']
-    )
-
-
-def load_empire_data(empire_path) -> EmpireData:
+def load_empire_data(empire_path) -> dict:
     with open(empire_path) as f:
-        empire_data = json.load(f)
+        empire_data = Empire(**json.load(f))
     
-    if not isinstance(empire_data['countdown'], int):
-        raise ValueError('countdown should be a int')
+    return empire_data
     
-    bounty_hunters = set()
-    for bounty_hunter_position in empire_data['bounty_hunters']:
-        if len(bounty_hunter_position) != 2:
-            raise ValueError
 
-        bounty_hunters.add((bounty_hunter_position['planet'], bounty_hunter_position['day']))
+def load_falcon_data(falcon_path):
+    with open(falcon_path) as f:
+        falcon_data = Falcon(**json.load(f))
+    
+    base_dir = os.path.dirname(falcon_path)
+    routes_path = os.path.join(base_dir, falcon_data.routes_db)
 
-    return EmpireData(
-        empire_data['countdown'],
-        bounty_hunters
-    )
+    if not os.path.exists(routes_path):
+        raise FileNotFoundError(f"Could not find {falcon_data['routes_db']}")
+    
+    return falcon_data.autonomy, falcon_data.departure, falcon_data.arrival, routes_path
 
 
-def load_universe_data(falcon_path, db_relative_path) -> dict:
+def load_universe_data(universe_path, autonomy, departure, arrival) -> dict:
     routes = defaultdict(lambda : defaultdict(int))
 
-    path = os.path.join(os.path.dirname(falcon_path), db_relative_path)
-    with sqlite3.connect(path) as conn:
+    with sqlite3.connect(universe_path) as conn:
         cursor = conn.cursor()
         cursor.execute("""SELECT * from routes;""")
         
-        for departure, arrival, distance in cursor:
-            routes[departure][arrival] = distance
-    
+        departure_seen = False
+        arrival_seen = False
+
+        for leg_departure, leg_arrival, distance in cursor:
+            if distance > autonomy:
+                logger.debug('Do not load {leg_departure}:{leg_arrival} in {distance} days because exceeding autonomy={autonomy}')
+                continue
+            
+            if departure == leg_departure:
+                departure_seen = True
+            
+            if arrival == leg_arrival:
+                arrival_seen = True
+            
+            routes[leg_departure][leg_arrival] = distance
+
+        if not departure_seen:
+            raise ValueError(f'departure {departure} not found in the universe data')
+
+        if not arrival_seen:
+            raise ValueError(f'departure {arrival} not found in the universe data')
     return routes
