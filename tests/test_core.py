@@ -1,4 +1,4 @@
-from app.millenium_router.core import compute_odds, find_paths
+from backend.millenium_router.core import compute_odds, find_paths
 
 
 def test_compute_odds():
