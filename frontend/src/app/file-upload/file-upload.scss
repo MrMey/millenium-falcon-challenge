@@ -1,0 +1,13 @@
+.top-left-logo {
+  top: 10px;
+  left: 10px;
+  
+  /* Réduire la largeur à 100 pixels (par exemple) */
+  width: 100px; 
+  
+  /* La hauteur s'ajustera automatiquement pour conserver les proportions */
+  height: auto; 
+  
+  z-index: 1000;
+  border-radius: 5px; 
+}

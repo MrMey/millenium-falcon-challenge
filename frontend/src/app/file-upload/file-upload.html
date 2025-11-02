@@ -1,0 +1,21 @@
+<img src="leia_searching.jpg" class="top-left-logo">
+
+<h3>Enter JSON file with empire data</h3>
+
+<input type="file" (change)="onFileSelected($event)" accept=".json">
+
+<button (click)="onUpload()" [disabled]="!selectedFile">
+  Upload file
+</button>
+
+<div *ngIf="uploadProgress !== null">
+  <p>Upload progression: {{ uploadProgress | number:'1.0-0' }}%</p>
+  <progress [value]="uploadProgress" max="100"></progress>
+</div>
+
+<p *ngIf="uploadSuccess">✅ File successfully uploaded</p>
+<p *ngIf="uploadError">❌ Upload failed : {{ uploadError }}</p>
+
+<div *ngIf="odds !== null" class="result-display">
+  <p>The odds of success are : <strong>{{ odds }} / 100 </strong></p>
+</div>
