@@ -3,6 +3,7 @@ import pydantic
 import click
 
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 from .config import config
 from .millenium_router import models, loaders, core
@@ -13,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=False)
+    CORS(app)
+
     app.config.from_object(config[config_name])    
     autonomy, departure, arrival, universe_path = loaders.load_falcon_data(app.config["MILLENIUM_FALCON_PATH"])
 
@@ -42,6 +45,7 @@ def create_app(config_name):
     @app.route('/router', methods=['POST'])
     def router():
         if not request.json:
+            logger.debug('missing json payload in router API call')
             return jsonify({"error": "Missing JSON payload"}), 400
         
         try:
