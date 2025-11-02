@@ -66,14 +66,17 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
 
 
 def compute_odds(capture_attempts: int) -> int:
-    if capture_attempts == 0:
-        capture_chance = 0.0
-    elif capture_attempts == 1:
-        capture_chance = 0.1
-    else:
-        capture_chance = 0.1 + sum(9 ** (k-1) / 10 ** k for k in range(2, capture_attempts + 1))
-    
-    return int(100 * (1 - capture_chance))
+    """
+    we can factorize / 10 in 
+        1 / 10 + 9 ** 1 / 10**2 + 9**2 / 10 ** 3
+    to get the geometrical sum of reason x = 0.9
+        (1 + 0.9 + 0.9**2 + ...+ 0.9**(n-1))    / 10
+    whose sums is:
+        (1 - x**n) / (1 - x )                   / 10
+    which ends up simply:
+        0.9**n
+    """
+    return int(0.9**capture_attempts * 100)
 
 
 def find_best_path_and_odds(routes, departure, arrival, countdown, autonomy, bounty_hunters) -> int:

@@ -4,6 +4,8 @@ from backend.millenium_router.core import compute_odds, find_paths
 def test_compute_odds():
     assert compute_odds(0) == 100
     assert compute_odds(1) == 90
+    assert compute_odds(2) == 81
+    
 
 
 def test_countdown_too_low():
