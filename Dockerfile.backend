@@ -1,0 +1,23 @@
+# ÉTAPE 1: Image de base Python
+FROM python:3.11-slim as base
+
+# Définir le répertoire de travail dans le conteneur
+WORKDIR /app
+
+# Définir les variables d'environnement
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Copier les dépendances et les installer (pour le cache)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copier le reste du code de l'application
+COPY . .
+
+# EXPOSER le port sur lequel Gunicorn va écouter dans le conteneur
+EXPOSE 5000
+
+# Commande pour lancer Gunicorn (doit écouter sur 0.0.0.0 pour Docker)
+# Remplacez wsgi:application par votre point d'entrée réel (ex: app:app)
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:application"]

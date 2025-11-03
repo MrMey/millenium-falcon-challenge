@@ -1,0 +1,19 @@
+services:
+  backend:
+    build: 
+      context: . 
+      dockerfile: Dockerfile.backend    
+    ports:
+      - "5000:5000"
+    restart: always
+    container_name: flask_backend_app
+  frontend:
+    build:
+      context: ./frontend 
+      dockerfile: ./Dockerfile.frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    restart: always
+    container_name: angular_frontend_app

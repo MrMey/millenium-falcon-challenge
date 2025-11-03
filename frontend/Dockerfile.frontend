@@ -1,0 +1,22 @@
+FROM node:20-alpine as build
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build -- --output-path=./dist/out --configuration=production
+
+FROM nginx:stable-alpine as final
+
+RUN rm -rf /etc/nginx/conf.d/*
+
+COPY --from=build /app/dist/out/browser /usr/share/nginx/html
+# angular output build path is /app/dist/out/browser
+
+COPY ./nginx.conf /etc/nginx/conf.d/app.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
