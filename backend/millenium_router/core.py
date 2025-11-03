@@ -9,16 +9,15 @@ logger = logging.getLogger(__name__)
 
 
 def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
-    print(routes)
-    queue = [((departure,), 0, autonomy, 0)]
+    queue = [(((departure, 0),), autonomy, 0)]
 
     iterations = 0
     min_capture_attempts = 0
     best_path = None
     
     while queue:
-        planets, day_no, fuel, capture_attempts = queue.pop(0)
-        current_planet = planets[-1]
+        planets, fuel, capture_attempts = queue.pop(0)
+        current_planet, day_no = planets[-1]
 
         if (current_planet, day_no) in bounty_hunters:
             capture_attempts += 1
@@ -33,10 +32,9 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
                 continue
 
             if neighbor == arrival:
-                logger.debug("Found a path %s with %i capture attempts", planets, capture_attempts)
                 if best_path is None or capture_attempts < min_capture_attempts:
                     min_capture_attempts = capture_attempts
-                    best_path = tuple((*planets, neighbor))
+                    best_path = ((*planets, (neighbor, day_no + distance)))
 
                 if capture_attempts == 0:
                     logger.debug("Found a safe path. No need to search more")
@@ -47,17 +45,16 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
             if distance + day_no == countdown:
                 continue
             
-            logger.debug("will jump to %s in %i", neighbor, distance)
+            logger.debug("will jump to %s in %i day(s)", neighbor, distance)
             queue.append(
                 (
-                    tuple((*planets, neighbor)),
-                    day_no + distance, 
+                    (*planets, (neighbor, day_no + distance)), 
                     fuel - distance, capture_attempts
                 )
             )
         
         if day_no + 1 <= countdown:
-            queue.append((tuple((*planets, current_planet)), day_no + 1, autonomy, capture_attempts))
+            queue.append((((*planets, (current_planet, day_no + 1))), autonomy, capture_attempts))
             logger.debug("will wait in %s", current_planet)
 
         iterations += 1
@@ -87,6 +84,6 @@ def find_best_path_and_odds(routes, departure, arrival, countdown, autonomy, bou
         logger.debug(f"Found no path with odds={odds}")
     else:
         odds = compute_odds(capture_attempts)
-        logger.debug(f"Found this path {best_path} with odds={odds}")
+        logger.debug(f"Found this path {best_path} with capture_attemps={capture_attempts} and odds={odds}")
 
     return odds

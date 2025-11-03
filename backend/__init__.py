@@ -57,13 +57,15 @@ def create_app(config_name):
             "details": validation_errors 
         }), 400
 
+        bounty_hunters = set((el.planet, el.day) for el in empire_data.bounty_hunters)
+
         odds = core.find_best_path_and_odds(
             routes=routes, 
             departure=departure, 
             arrival=arrival, 
             countdown=empire_data.countdown,
             autonomy=autonomy,
-            bounty_hunters=empire_data.bounty_hunters
+            bounty_hunters=bounty_hunters
         )
         return jsonify({'odds': odds})
     
@@ -75,6 +77,8 @@ def create_app(config_name):
         autonomy, departure, arrival, universe_path = loaders.load_falcon_data(falcon_path)
         empire_data = loaders.load_empire_data(empire_path)
         routes = loaders.load_universe_data(universe_path, autonomy, departure, arrival)
+        
+        bounty_hunters = set((el.planet, el.day) for el in empire_data.bounty_hunters)
 
         odds = core.find_best_path_and_odds(
                 routes=routes, 
@@ -82,7 +86,7 @@ def create_app(config_name):
                 arrival=arrival, 
                 countdown=empire_data.countdown,
                 autonomy=autonomy,
-                bounty_hunters=empire_data.bounty_hunters
+                bounty_hunters=bounty_hunters
             )
         print(odds)
 
