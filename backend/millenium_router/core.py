@@ -11,10 +11,13 @@ logger = logging.getLogger(__name__)
 def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
     queue = [(((departure, 0),), autonomy, 0)]
 
+    print(routes)
     iterations = 0
+
     min_capture_attempts = 0
     best_path = None
-    
+    min_days = None
+
     while queue:
         planets, fuel, capture_attempts = queue.pop(0)
         current_planet, day_no = planets[-1]
@@ -32,8 +35,13 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
                 continue
 
             if neighbor == arrival:
-                if best_path is None or capture_attempts < min_capture_attempts:
+                if (
+                        best_path is None 
+                        or capture_attempts < min_capture_attempts
+                        or (min_days < (day_no + distance) and capture_attempts == min_capture_attempts)
+                    ):
                     min_capture_attempts = capture_attempts
+                    min_days = day_no + distance
                     best_path = ((*planets, (neighbor, day_no + distance)))
 
                 if capture_attempts == 0:
