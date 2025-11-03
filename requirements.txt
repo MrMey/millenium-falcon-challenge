@@ -2,10 +2,14 @@
 #    uv pip compile requirements.in -o requirements.txt
 annotated-types==0.7.0
     # via pydantic
+black==25.9.0
+    # via -r requirements.in
 blinker==1.9.0
     # via flask
 click==8.3.0
-    # via flask
+    # via
+    #   black
+    #   flask
 colorama==0.4.6
     # via
     #   click
@@ -29,10 +33,17 @@ markupsafe==3.0.3
     #   flask
     #   jinja2
     #   werkzeug
+mypy-extensions==1.1.0
+    # via black
 packaging==25.0
     # via
+    #   black
     #   gunicorn
     #   pytest
+pathspec==0.12.1
+    # via black
+platformdirs==4.5.0
+    # via black
 pluggy==1.6.0
     # via pytest
 pydantic==2.12.3
@@ -43,6 +54,8 @@ pygments==2.19.2
     # via pytest
 pytest==8.4.2
     # via -r requirements.in
+pytokens==0.2.0
+    # via black
 typing-extensions==4.15.0
     # via
     #   pydantic
