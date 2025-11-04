@@ -1,13 +1,32 @@
-.top-left-logo {
-  top: 10px;
-  left: 10px;
-  
-  /* Réduire la largeur à 100 pixels (par exemple) */
-  width: 100px; 
-  
-  /* La hauteur s'ajustera automatiquement pour conserver les proportions */
-  height: auto; 
-  
-  z-index: 1000;
-  border-radius: 5px; 
+:host {
+    /* 1. Centrage au milieu de la page (nécessite le parent) */
+    /* Assure que l'élément hôte est visible et peut être centré */
+    display: flex; 
+    /* Utiliser min-height pour garantir que l'hôte prend au moins la hauteur de la fenêtre */
+    min-height: 100vh;
+    /* Centre le contenu de l'hôte verticalement */
+    align-items: center;
+    /* Centre le contenu de l'hôte horizontalement */
+    justify-content: center;
 }
+
+/* Cible le conteneur principal de votre composant pour la boîte */
+/* Si vous n'avez pas de conteneur principal, vous devrez peut-être ajouter une div englobante dans votre HTML. */
+/* Sinon, appliquez ces styles directement au :host si c'est un composant simple. */
+.file-upload-container {
+    /* 2. Style de la boîte (bordure et coins arrondis) */
+    border: 1px solid #333; /* Bordure noire fine (ajustez l'épaisseur) */
+    border-radius: 10px;    /* Coins arrondis (ajustez le rayon) */
+    
+    /* 3. Ajustements de taille et espacement */
+    padding: 30px;          /* Espacement intérieur */
+    max-width: 600px;       /* Limite la largeur du composant */
+    width: 90%;             /* Réponse aux petits écrans */
+    background-color: white; /* Pour que le contenu se détache du fond de page */
+
+    /* S'assurer que les images ne débordent pas si elles ne sont pas positionnées en absolute */
+    position: relative; 
+    box-sizing: border-box;
+}
+
+

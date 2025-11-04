@@ -1,0 +1,26 @@
+.right-photo-background {
+    background-image: url('/c3po.png');
+    background-repeat: no-repeat; 
+
+    width: 200px; 
+    height: 300px;
+
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-size: contain; 
+}
+
+
+.top-left-logo {
+    background-image: url('/leia_searching.jpg');
+    background-repeat: no-repeat; 
+
+    width: 300px; 
+    height: 300px;
+
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-size: contain; 
+}

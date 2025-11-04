@@ -1,7 +1,7 @@
 import { Component, ChangeDetectorRef} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpEventType, HttpHeaders } from '@angular/common/http';
-import { DataService } from '../data.service'; // Assurez-vous d'injecter votre service
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-file-upload',
@@ -18,19 +18,19 @@ export class FileUpload {
   uploadSuccess: boolean = false;
   uploadError: string | null = null;
   odds: number | null = null;
+  status: string = "Will the falcon reach the planet in time?";
 
   constructor(
     private dataService: DataService, 
     private cdr: ChangeDetectorRef
   ) { }
 
-  // 1. Gère la sélection du fichier
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
 
     if (file) {
       this.selectedFile = file;
-      this.uploadProgress = null; // Réinitialiser la progression
+      this.uploadProgress = null;
       this.uploadSuccess = false;
       this.uploadError = null;
     }
@@ -39,22 +39,24 @@ export class FileUpload {
   onUpload(): void {
     if (!this.selectedFile) return;
 
-    // 1. Utiliser FileReader pour lire le fichier localement
     const reader = new FileReader();
 
     reader.onload = (e) => {
       try {
-        // Le contenu est une chaîne de caractères (e.target.result)
         const jsonContent = JSON.parse(e.target!.result as string);
         
-        // 2. Appeler le service avec l'objet JSON lu
         this.dataService.uploadJsonFile(jsonContent).subscribe({
           next: (response) => {
             console.log('JSON uploadé avec succès !', response.body);
             this.uploadSuccess = true;
             this.uploadError = null;
             this.odds = response.body.odds;
-
+            
+            if (this.odds === 100) {
+              this.status = "Congrats! The falcon has reached the planet in time!";
+            } else if (this.odds == 0) {
+              this.status = "Damned the Falcon hasn't reached the planet in time";
+            }
             this.cdr.markForCheck()
           },
           error: (err) => {
@@ -69,7 +71,6 @@ export class FileUpload {
       }
     };
 
-    // 3. Lire le fichier comme une chaîne de caractères (texte)
     reader.readAsText(this.selectedFile);
   }
 }

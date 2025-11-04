@@ -1,5 +1,4 @@
-<img src="leia_searching.jpg" class="top-left-logo">
-
+<div class="file-upload-container">
 <h3>Enter JSON file with empire data</h3>
 
 <input type="file" (change)="onFileSelected($event)" accept=".json">
@@ -17,5 +16,9 @@
 <p *ngIf="uploadError">❌ Upload failed : {{ uploadError }}</p>
 
 <div *ngIf="odds !== null" class="result-display">
-  <p>The odds of success are : <strong>{{ odds }} / 100 </strong></p>
+  <p>The odds are : <strong>{{ odds }} % </strong></p>
+</div>
+<div class="outcome">
+  {{status}}
+</div>
 </div>
