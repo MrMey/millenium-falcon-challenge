@@ -5,6 +5,7 @@ def test_compute_odds():
     assert compute_odds(0) == 100
     assert compute_odds(1) == 90
     assert compute_odds(2) == 81
+    assert compute_odds(3) == 73
 
 
 def test_countdown_too_low():

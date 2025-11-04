@@ -86,7 +86,7 @@ def compute_odds(capture_attempts: int) -> int:
     which ends up simply:
         0.9**n
     """
-    return int(0.9**capture_attempts * 100)
+    return round(0.9**capture_attempts * 100, 0)
 
 
 def find_best_path_and_odds(
