@@ -1,32 +1,55 @@
 :host {
-    /* 1. Centrage au milieu de la page (nécessite le parent) */
-    /* Assure que l'élément hôte est visible et peut être centré */
     display: flex; 
-    /* Utiliser min-height pour garantir que l'hôte prend au moins la hauteur de la fenêtre */
     min-height: 100vh;
-    /* Centre le contenu de l'hôte verticalement */
     align-items: center;
-    /* Centre le contenu de l'hôte horizontalement */
     justify-content: center;
 }
 
-/* Cible le conteneur principal de votre composant pour la boîte */
-/* Si vous n'avez pas de conteneur principal, vous devrez peut-être ajouter une div englobante dans votre HTML. */
-/* Sinon, appliquez ces styles directement au :host si c'est un composant simple. */
 .file-upload-container {
-    /* 2. Style de la boîte (bordure et coins arrondis) */
-    border: 1px solid #333; /* Bordure noire fine (ajustez l'épaisseur) */
-    border-radius: 10px;    /* Coins arrondis (ajustez le rayon) */
-    
-    /* 3. Ajustements de taille et espacement */
-    padding: 30px;          /* Espacement intérieur */
-    max-width: 600px;       /* Limite la largeur du composant */
-    width: 90%;             /* Réponse aux petits écrans */
-    background-color: white; /* Pour que le contenu se détache du fond de page */
+    padding: 30px;
+    width: 70%;
 
-    /* S'assurer que les images ne débordent pas si elles ne sont pas positionnées en absolute */
     position: relative; 
     box-sizing: border-box;
+    text-align: center;
 }
 
+@font-face {
+  font-family: 'StarJedi';
+  src: url('/fonts/Starjedi.ttf') format('truetype');
+}
 
+.starwars-text {
+  font-family: 'StarJedi', sans-serif;
+  font-size: 1em;
+  color: #ffe81f;
+  text-shadow: 1px 1px 4px #000;
+  letter-spacing: 3px;
+}
+
+.starwars-title {
+  font-family: 'StarJedi', sans-serif;
+  font-size: 5em;
+  color: #ffe81f;
+  text-shadow: 1px 1px 4px #000;
+  letter-spacing: 3px;
+}
+
+.glow-box {
+  border: 3px solid #00ffcc;
+  border-radius: 10px;
+  padding: 20px 30px;
+  margin: 20px auto;
+  width: 60%;
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+  background: rgba(0, 0, 0, 0.2);
+  text-shadow: 0 0 8px #00ffff;
+  box-shadow: 0 0 15px #00ffff, 0 0 30px #00ffff, inset 0 0 10px #00ffff;
+  transition: 0.3s ease-in-out;
+}
+
+.glow-box:hover {
+  box-shadow: 0 0 25px #00ffff, 0 0 50px #00ffff, inset 0 0 20px #00ffff;
+  transform: scale(1.02);
+}

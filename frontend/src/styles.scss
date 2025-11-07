@@ -1,6 +1,9 @@
 body {
-    background-color: rgba(135, 206, 235, 0.4); 
-    min-height: 100vh;
-    margin: 0; 
-    padding: 0;
+    // Un noir profond et riche
+    background-color: #0d0d0d; 
+    
+    // Vous pouvez ajouter une subtile texture de grain ou de 'noise' par-dessus
+    // (en supposant que vous ayez une petite image de texture de bruit répétable)
+    background-image: url('/star_background.jpg');
+    background-repeat: repeat;
 }
