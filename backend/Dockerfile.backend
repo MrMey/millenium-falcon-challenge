@@ -13,11 +13,12 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copier le reste du code de l'application
-COPY . .
+RUN mkdir backend
+COPY . /app/backend
 
 # EXPOSER le port sur lequel Gunicorn va écouter dans le conteneur
 EXPOSE 5000
 
 # Commande pour lancer Gunicorn (doit écouter sur 0.0.0.0 pour Docker)
 # Remplacez wsgi:application par votre point d'entrée réel (ex: app:app)
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--chdir", "./backend", "wsgi:application"]

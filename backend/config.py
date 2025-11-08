@@ -1,8 +1,15 @@
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
 class Config:
     """Configuration de base commune à tous les environnements."""
 
     LOG_LEVEL = "INFO"
-    MILLENIUM_FALCON_PATH = "examples/example2/millennium-falcon.json"
+    MILLENIUM_FALCON_PATH = (
+        BASE_DIR / "examples" / "example2" / "millennium-falcon.json"
+    )
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 

@@ -7,10 +7,9 @@ exclude = '''
     \.git
   | \.__pycache__
   | \.env
-  | \.pytestcache
+  | \.pytest_cache
   | \.venv
   | examples
   | frontend
-  | \.tox
 )/
 '''
