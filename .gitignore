@@ -1,4 +1,6 @@
 *__pycache__*
 frontend/.vscode/extensions.json
 frontend/.vscode/launch.json
+*.egg-info
 .vscode
+build

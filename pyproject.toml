@@ -13,3 +13,21 @@ exclude = '''
   | frontend
 )/
 '''
+
+[tool.setuptools]
+package-dir = {"" = "."} 
+packages = ["backend"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mon-cli"
+version = "1.0.0"
+dependencies = [
+    "typer",
+]
+
+[project.scripts]
+"give-me-odds" = "backend.cli:cli_entry_point"

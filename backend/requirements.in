@@ -4,3 +4,4 @@ flask-cors
 pydantic
 gunicorn
 pre-commit
+typer

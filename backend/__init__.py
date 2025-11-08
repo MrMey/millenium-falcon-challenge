@@ -1,11 +1,9 @@
 import pydantic
-import click
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from .config import config
-from .millenium_router import models, loaders, core
+from millenium_router import models, loaders, core
 
 
 def create_app(config_name):
@@ -66,27 +64,5 @@ def create_app(config_name):
             bounty_hunters=bounty_hunters,
         )
         return jsonify({"odds": odds})
-
-    @app.cli.command("give-me-the-odds")
-    @click.argument("falcon-path")
-    @click.argument("empire-path")
-    def give_me_the_odds_cli(falcon_path, empire_path):
-        autonomy, departure, arrival, universe_path = loaders.load_falcon_data(
-            falcon_path
-        )
-        empire_data = loaders.load_empire_data(empire_path)
-        routes = loaders.load_universe_data(universe_path, autonomy, departure, arrival)
-
-        bounty_hunters = set((el.planet, el.day) for el in empire_data.bounty_hunters)
-
-        odds = core.find_best_path_and_odds(
-            routes=routes,
-            departure=departure,
-            arrival=arrival,
-            countdown=empire_data.countdown,
-            autonomy=autonomy,
-            bounty_hunters=bounty_hunters,
-        )
-        print(odds)
 
     return app
