@@ -1,10 +1,4 @@
-import logging
-
-
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+from flask import current_app
 
 
 def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
@@ -47,7 +41,9 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
                     best_path = (*planets, (neighbor, day_no + distance))
 
                 if capture_attempts == 0:
-                    logger.debug("Found a safe path. No need to search more")
+                    current_app.logger.debug(
+                        "Found a safe path. No need to search more"
+                    )
                     return best_path, min_capture_attempts
 
                 continue
@@ -55,7 +51,7 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
             if distance + day_no == countdown:
                 continue
 
-            logger.debug("will jump to %s in %i day(s)", neighbor, distance)
+            current_app.logger.debug("will jump to %s in %i day(s)", neighbor, distance)
             queue.append(
                 (
                     (*planets, (neighbor, day_no + distance)),
@@ -68,7 +64,7 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
             queue.append(
                 (((*planets, (current_planet, day_no + 1))), autonomy, capture_attempts)
             )
-            logger.debug("will wait in %s", current_planet)
+            current_app.logger.debug("will wait in %s", current_planet)
 
         iterations += 1
 
@@ -98,10 +94,10 @@ def find_best_path_and_odds(
 
     if best_path is None:
         odds = 0
-        logger.debug(f"Found no path with odds={odds}")
+        current_app.logger.debug(f"Found no path with odds={odds}")
     else:
         odds = compute_odds(capture_attempts)
-        logger.debug(
+        current_app.logger.debug(
             f"Found this path {best_path} with capture_attemps={capture_attempts} and odds={odds}"
         )
 

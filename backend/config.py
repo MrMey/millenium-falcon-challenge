@@ -10,13 +10,14 @@ class Config:
     MILLENIUM_FALCON_PATH = (
         BASE_DIR / "examples" / "example2" / "millennium-falcon.json"
     )
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 
 class DevelopmentConfig(Config):
     LOG_LEVEL = "DEBUG"
 
 
-config = {
-    "development": DevelopmentConfig,
-}
+class ProdConfig(Config):
+    LOG_LEVEL = "INFO"
+
+
+config = {"development": DevelopmentConfig, "production": ProdConfig}

@@ -1,12 +1,10 @@
 import json
 import sqlite3
 import os
-import logging
 from collections import defaultdict
+from flask import current_app
 from pydantic import ValidationError
 from .models import Empire, Falcon
-
-logger = logging.getLogger(__name__)
 
 
 def load_empire_data(empire_path) -> dict:
@@ -41,7 +39,7 @@ def load_universe_data(universe_path, autonomy, departure, arrival) -> dict:
 
         for leg_departure, leg_arrival, distance in cursor:
             if distance > autonomy:
-                logger.debug(
+                current_app.logger.debug(
                     "Do not load {leg_departure}:{leg_arrival} in {distance} days because exceeding autonomy={autonomy}"
                 )
                 continue

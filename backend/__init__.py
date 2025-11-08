@@ -1,4 +1,3 @@
-import logging
 import pydantic
 import click
 
@@ -9,14 +8,15 @@ from .config import config
 from .millenium_router import models, loaders, core
 
 
-logger = logging.getLogger(__name__)
-
-
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=False)
-    CORS(app)
 
     app.config.from_object(config[config_name])
+    app.logger.setLevel(app.config["LOG_LEVEL"])
+    app.logger.info("Start app with LOG_LEVEL %s", app.config["LOG_LEVEL"])
+
+    CORS(app)
+
     autonomy, departure, arrival, universe_path = loaders.load_falcon_data(
         app.config["MILLENIUM_FALCON_PATH"]
     )
@@ -25,7 +25,7 @@ def create_app(config_name):
     app.config["DEPARTURE"] = departure
     app.config["ARRIVAL"] = arrival
 
-    logger.info(
+    app.logger.info(
         f"Initializing session\n" f"AUTONOMY=%i\n" f"DEPARTURE=%s\n" f"ARRIVAL=%s",
         autonomy,
         departure,
@@ -46,7 +46,7 @@ def create_app(config_name):
     @app.route("/router", methods=["POST"])
     def router():
         if not request.json:
-            logger.debug("missing json payload in router API call")
+            app.logger.debug("missing json payload in router API call")
             return jsonify({"error": "Missing JSON payload"}), 400
 
         try:
