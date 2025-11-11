@@ -16,6 +16,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir backend
 COPY . /app/backend
 
+RUN echo '#!/bin/sh\n\
+export PYTHONPATH=/app:$PYTHONPATH\n\
+exec python /app/backend/cli.py "$@"' > /usr/local/bin/give-me-odds && \
+    chmod +x /usr/local/bin/give-me-odds
+
 # EXPOSER le port sur lequel Gunicorn va écouter dans le conteneur
 EXPOSE 5000
 

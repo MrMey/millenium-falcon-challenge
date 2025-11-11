@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from .config import config
-from millenium_router import models, loaders, core
+from backend.millenium_router import models, loaders, core
 
 
 def create_app(config_name):
