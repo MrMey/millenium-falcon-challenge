@@ -1,10 +1,12 @@
 # ÉTAPE 1: Image de base Python
-FROM python:3.11-slim as base
+FROM python:3.11-slim AS base
 
 # Définir le répertoire de travail dans le conteneur
 WORKDIR /app
 
-# Définir les variables d'environnement
+RUN adduser --disabled-password --no-create-home appuser
+
+ENV PATH="/home/appuser/.local/bin:$PATH"
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
@@ -20,6 +22,8 @@ RUN echo '#!/bin/sh\n\
 export PYTHONPATH=/app:$PYTHONPATH\n\
 exec python /app/backend/cli.py "$@"' > /usr/local/bin/give-me-odds && \
     chmod +x /usr/local/bin/give-me-odds
+
+USER appuser
 
 # EXPOSER le port sur lequel Gunicorn va écouter dans le conteneur
 EXPOSE 5000
