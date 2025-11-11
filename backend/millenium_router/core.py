@@ -1,14 +1,33 @@
 import logging
-
+from functools import lru_cache
+from typing import Iterable, Tuple
+from sqlite3 import Connection, Cursor
 
 logger = logging.getLogger(__name__)
 
 
-def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
-    queue = [(((departure, 0),), autonomy, 0)]
+def get_neighbors_from_db(
+    cursor: Cursor, origin: str, max_distance: int
+) -> Iterable[Tuple[str, int]]:
+    # returns a list of tuple (destination, time_travel) corresponding to
+    # all neighbors of requested origin closer than max_distance
 
-    logger.debug(routes)
-    iterations = 0
+    cursor.execute(
+        f"""SELECT destination, travel_time from routes 
+        WHERE origin=?
+        AND travel_time<=?;
+        """,
+        (
+            origin,
+            max_distance,
+        ),
+    )
+
+    yield from cursor
+
+
+def find_paths(cursor: Cursor, departure, arrival, countdown, autonomy, bounty_hunters):
+    queue = [(((departure, 0),), autonomy, 0)]
 
     min_capture_attempts = 0
     best_path = None
@@ -21,14 +40,9 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
         if (current_planet, day_no) in bounty_hunters:
             capture_attempts += 1
 
-        neighbors = routes[current_planet]
-
-        for neighbor, distance in neighbors.items():
-            if distance > fuel:
-                continue
-
-            if distance > countdown - day_no:
-                continue
+        for neighbor, distance in get_neighbors_from_db(
+            cursor, current_planet, min(fuel, countdown - day_no)
+        ):
 
             if neighbor == arrival:
                 if (
@@ -67,8 +81,6 @@ def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
             )
             logger.debug("will wait in %s", current_planet)
 
-        iterations += 1
-
     return best_path, min_capture_attempts
 
 
@@ -87,10 +99,12 @@ def compute_odds(capture_attempts: int) -> int:
 
 
 def find_best_path_and_odds(
-    routes, departure, arrival, countdown, autonomy, bounty_hunters
+    conn, departure, arrival, countdown, autonomy, bounty_hunters
 ) -> int:
+    cursor = conn.cursor()
+
     best_path, capture_attempts = find_paths(
-        routes, departure, arrival, countdown, autonomy, bounty_hunters
+        cursor, departure, arrival, countdown, autonomy, bounty_hunters
     )
 
     if best_path is None:

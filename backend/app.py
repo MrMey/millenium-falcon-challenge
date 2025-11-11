@@ -1,7 +1,8 @@
 import os
 import logging
 import pydantic
-from flask import Flask, request, jsonify
+import sqlite3
+from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 
 from .config import config
@@ -29,12 +30,28 @@ def get_frontend_url(app, config_name: str) -> str:
         )
 
 
+def get_or_create_db(db_path) -> sqlite3.Connection:
+    """Opens a new database connection if there is none yet for the current application context."""
+    if "db" not in g:
+        g.db = sqlite3.connect(db_path, detect_types=sqlite3.PARSE_DECLTYPES)
+        g.db.row_factory = sqlite3.Row
+    return g.db
+
+
 def create_app(config_name):
     app = Flask(__name__)
 
     app.config.from_object(config[config_name])
     log_tools.set_all_loggers_level(app.config["LOG_LEVEL"])
     app.logger.info("Start app with LOG_LEVEL %s", app.config["LOG_LEVEL"])
+
+    # Implement the proper tear-down as soon as possible
+    @app.teardown_appcontext
+    def close_connection(exception):
+        """Closes the database connection at the end of the request."""
+        db = g.pop("db", None)
+        if db is not None:
+            db.close()
 
     frontend_url = get_frontend_url(app, config_name)
     CORS(app, resources={r"/*": {"origins": frontend_url, "methods": "POST"}})
@@ -52,13 +69,6 @@ def create_app(config_name):
         autonomy,
         departure,
         arrival,
-    )
-
-    routes = loaders.load_universe_data(
-        universe_path=universe_path,
-        autonomy=autonomy,
-        departure=departure,
-        arrival=arrival,
     )
 
     @app.route("/")
@@ -79,8 +89,9 @@ def create_app(config_name):
 
         bounty_hunters = set((el.planet, el.day) for el in empire_data.bounty_hunters)
 
+        conn = get_or_create_db(universe_path)
         odds = core.find_best_path_and_odds(
-            routes=routes,
+            conn=conn,
             departure=departure,
             arrival=arrival,
             countdown=empire_data.countdown,

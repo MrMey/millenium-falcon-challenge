@@ -8,14 +8,9 @@ def test_compute_odds():
     assert compute_odds(3) == 73
 
 
-def test_countdown_too_low():
-    routes = {
-        "Tatooine": {"Dagobah": 6, "Hoth": 6},
-        "Dagobah": {"Endor": 4, "Hoth": 1},
-        "Hoth": {"Endor": 1},
-    }
+def test_countdown_too_low(mocked_routes):
     best_path, capture_attempts = find_paths(
-        routes,
+        None,  # fake_cursor
         departure="Tatooine",
         arrival="Endor",
         countdown=5,
@@ -26,15 +21,9 @@ def test_countdown_too_low():
     assert capture_attempts == 0
 
 
-def test_safe_path():
-    routes = {
-        "Tatooine": {"Dagobah": 6, "Hoth": 6},
-        "Dagobah": {"Endor": 4, "Hoth": 1},
-        "Hoth": {"Endor": 1},
-    }
-
+def test_safe_path(mocked_routes):
     best_path, capture_attempts = find_paths(
-        routes,
+        None,  # fake_cursor
         departure="Tatooine",
         arrival="Endor",
         countdown=8,
@@ -45,9 +34,9 @@ def test_safe_path():
     assert capture_attempts == 0
 
 
-def test_exemple_1(exemple_routes, exemple_bounty_hunters):
+def test_exemple_1(mocked_routes, exemple_bounty_hunters):
     best_path, capture_attempts = find_paths(
-        exemple_routes,
+        None,  # fake_cursor
         "Tatooine",
         "Endor",
         countdown=7,
@@ -59,9 +48,9 @@ def test_exemple_1(exemple_routes, exemple_bounty_hunters):
     assert capture_attempts == 0
 
 
-def test_exemple_2(exemple_routes, exemple_bounty_hunters):
+def test_exemple_2(mocked_routes, exemple_bounty_hunters):
     best_path, capture_attempts = find_paths(
-        exemple_routes,
+        None,  # fake_cursor
         "Tatooine",
         "Endor",
         countdown=8,
@@ -73,9 +62,9 @@ def test_exemple_2(exemple_routes, exemple_bounty_hunters):
     assert capture_attempts == 2
 
 
-def test_exemple_3(exemple_routes, exemple_bounty_hunters):
+def test_exemple_3(mocked_routes, exemple_bounty_hunters):
     best_path, capture_attempts = find_paths(
-        exemple_routes,
+        None,  # fake_cursor
         "Tatooine",
         "Endor",
         countdown=9,
@@ -92,9 +81,9 @@ def test_exemple_3(exemple_routes, exemple_bounty_hunters):
     assert capture_attempts == 1
 
 
-def test_exemple_4(exemple_routes, exemple_bounty_hunters):
+def test_exemple_4(mocked_routes, exemple_bounty_hunters):
     best_path, capture_attempts = find_paths(
-        exemple_routes,
+        None,  # fake_cursor
         "Tatooine",
         "Endor",
         countdown=10,

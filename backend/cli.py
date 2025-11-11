@@ -2,6 +2,7 @@
 
 import logging
 import typer
+import sqlite3
 from backend.log_tools import set_all_loggers_level
 from backend.millenium_router import loaders, core
 
@@ -34,19 +35,21 @@ def cli_entry_point():
             falcon_path
         )
         empire_data = loaders.load_empire_data(empire_path)
-        routes = loaders.load_universe_data(universe_path, autonomy, departure, arrival)
 
-        bounty_hunters = set((el.planet, el.day) for el in empire_data.bounty_hunters)
+        with sqlite3.connect(universe_path) as conn:
+            bounty_hunters = set(
+                (el.planet, el.day) for el in empire_data.bounty_hunters
+            )
 
-        odds = core.find_best_path_and_odds(
-            routes=routes,
-            departure=departure,
-            arrival=arrival,
-            countdown=empire_data.countdown,
-            autonomy=autonomy,
-            bounty_hunters=bounty_hunters,
-        )
-        print(odds)
+            odds = core.find_best_path_and_odds(
+                conn=conn,
+                departure=departure,
+                arrival=arrival,
+                countdown=empire_data.countdown,
+                autonomy=autonomy,
+                bounty_hunters=bounty_hunters,
+            )
+            print(odds)
 
     app()
 
