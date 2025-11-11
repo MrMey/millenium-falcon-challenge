@@ -1,16 +1,22 @@
+import logging
 import pydantic
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 from .config import config
 from backend.millenium_router import models, loaders, core
+from backend import log_tools
+
+logging.basicConfig(
+    level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 def create_app(config_name):
     app = Flask(__name__, instance_relative_config=False)
 
     app.config.from_object(config[config_name])
-    app.logger.setLevel(app.config["LOG_LEVEL"])
+    log_tools.set_all_loggers_level(app.config["LOG_LEVEL"])
     app.logger.info("Start app with LOG_LEVEL %s", app.config["LOG_LEVEL"])
 
     CORS(app)

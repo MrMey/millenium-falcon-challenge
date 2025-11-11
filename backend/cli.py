@@ -2,9 +2,13 @@
 
 import logging
 import typer
+from backend.log_tools import set_all_loggers_level
 from backend.millenium_router import loaders, core
 
-logger = logging.getLogger()
+logging.basicConfig(
+    level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 app = typer.Typer()
 
 
@@ -22,9 +26,9 @@ def cli_entry_point():
         ),
     ):
         if debug:
-            logger.setLevel("DEBUG")
+            set_all_loggers_level("DEBUG")
         else:
-            logger.setLevel("INFO")
+            set_all_loggers_level("INFO")
 
         autonomy, departure, arrival, universe_path = loaders.load_falcon_data(
             falcon_path

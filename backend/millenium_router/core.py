@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 def find_paths(routes, departure, arrival, countdown, autonomy, bounty_hunters):
     queue = [(((departure, 0),), autonomy, 0)]
 
-    print(routes)
+    logger.debug(routes)
     iterations = 0
 
     min_capture_attempts = 0
