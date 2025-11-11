@@ -5,6 +5,7 @@ services:
       dockerfile: ./Dockerfile.backend
     environment:
       - ENV=${ENV}
+      - FRONTEND_URL=http://localhost:${FRONTEND_PORT}
     ports:
       - "${BACKEND_PORT}:5000"
     restart: always

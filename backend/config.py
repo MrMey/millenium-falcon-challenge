@@ -14,6 +14,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     LOG_LEVEL = "DEBUG"
+    FRONTEND_URL = "http://localhost:4200"
 
 
 class ProdConfig(Config):

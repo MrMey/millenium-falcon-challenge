@@ -1,3 +1,4 @@
+import os
 import logging
 import pydantic
 from flask import Flask, request, jsonify
@@ -12,14 +13,31 @@ logging.basicConfig(
 )
 
 
+def get_frontend_url(app, config_name: str) -> str:
+    if config_name == "production":
+        if os.getenv("FRONTEND_URL"):
+            return os.getenv("FRONTEND_URL")
+        else:
+            raise ValueError(
+                "FRONTEND_URL env variable not set while in production mode"
+            )
+    elif app.config.get("FRONTEND_URL"):
+        return app.config.get("FRONTEND_URL")
+    else:
+        raise ValueError(
+            "FRONTEND_URL config attribute not set while in development mode"
+        )
+
+
 def create_app(config_name):
-    app = Flask(__name__, instance_relative_config=False)
+    app = Flask(__name__)
 
     app.config.from_object(config[config_name])
     log_tools.set_all_loggers_level(app.config["LOG_LEVEL"])
     app.logger.info("Start app with LOG_LEVEL %s", app.config["LOG_LEVEL"])
 
-    CORS(app)
+    frontend_url = get_frontend_url(app, config_name)
+    CORS(app, resources={r"/*": {"origins": frontend_url, "methods": "POST"}})
 
     autonomy, departure, arrival, universe_path = loaders.load_falcon_data(
         app.config["MILLENIUM_FALCON_PATH"]
