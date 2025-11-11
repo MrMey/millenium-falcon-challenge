@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   // Remplacez par l'URL de votre endpoint d'upload (côté serveur)
-  private uploadUrl = 'http://localhost:5000/router'; 
+  private uploadUrl = environment.apiUrl; 
 
   constructor(private http: HttpClient) { }
 

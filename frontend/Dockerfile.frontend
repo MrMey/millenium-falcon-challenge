@@ -1,4 +1,4 @@
-FROM node:20-alpine as build
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -8,15 +8,21 @@ RUN npm install
 COPY . .
 RUN npm run build -- --output-path=./dist/out --configuration=production
 
-FROM nginx:stable-alpine as final
+FROM nginx:stable-alpine AS final
 
 RUN rm -rf /etc/nginx/conf.d/*
 
 COPY --from=build /app/dist/out/browser /usr/share/nginx/html
-# angular output build path is /app/dist/out/browser
 
+# add the script to perform url token substitution
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 COPY ./nginx.conf /etc/nginx/conf.d/app.conf
 
+RUN chmod +x /docker-entrypoint.sh
+
 EXPOSE 80
+
+# run the script to perform url token substitution
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 CMD ["nginx", "-g", "daemon off;"]
