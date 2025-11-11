@@ -1,6 +1,12 @@
+# compile the js files
 FROM node:20-alpine AS build
 
+RUN adduser --disabled-password appuser
+
 WORKDIR /app
+
+RUN chown -R appuser:appuser /app
+USER appuser
 
 COPY package.json package-lock.json ./
 RUN npm install
@@ -8,19 +14,29 @@ RUN npm install
 COPY . .
 RUN npm run build -- --output-path=./dist/out --configuration=production
 
-FROM nginx:stable-alpine AS final
+
+# build the final image = serve compiled js files with nginx
+FROM nginxinc/nginx-unprivileged:alpine AS final
+# we can use unprivileged image (e.g. master will not be root) 
+# because it listens on unprivileged ports (>1024)
+
+# need to swith temporary to root to create the workdir under nginx ownership
+USER root
+RUN mkdir -p /app/html && chown -R nginx:nginx /app/html
+USER nginx
+# switch back to nginx to avoid using root for security reasons
 
 RUN rm -rf /etc/nginx/conf.d/*
 
-COPY --from=build /app/dist/out/browser /usr/share/nginx/html
+COPY --from=build --chown=nginx:nginx /app/dist/out/browser /app/html
 
 # add the script to perform url token substitution
-COPY ./docker-entrypoint.sh /docker-entrypoint.sh
+COPY --chown=nginx:nginx ./docker-entrypoint.sh /docker-entrypoint.sh
 COPY ./nginx.conf /etc/nginx/conf.d/app.conf
 
 RUN chmod +x /docker-entrypoint.sh
 
-EXPOSE 80
+EXPOSE 8080
 
 # run the script to perform url token substitution
 ENTRYPOINT ["/docker-entrypoint.sh"]

@@ -8,12 +8,12 @@ if [ -z "$BACKEND_URL" ]; then
   BACKEND_URL="http://localhost:5000/router"
 fi
 
-JS_FILES=$(find /usr/share/nginx/html -type f -name "*.js")
+JS_FILES=$(find /app/html -type f -name "*.js")
 
 echo "INFO: replacing: BACKEND_URL_PLACEHOLDER_TOKEN -> $BACKEND_URL"
 
 for file in $JS_FILES; do
-  sed "s|BACKEND_URL_PLACEHOLDER_TOKEN|$BACKEND_URL|g" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
+  sed "s|BACKEND_URL_PLACEHOLDER_TOKEN|${BACKEND_URL}|g" "$file" > "$file.tmp" && mv "$file.tmp" "$file"
 done
 
 echo "INFO: replacement done"
