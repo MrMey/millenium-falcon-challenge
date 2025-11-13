@@ -10,24 +10,23 @@ exclude = '''
   | \.pytest_cache
   | \.venv
   | examples
-  | frontend
+  | build  
 )/
 '''
 
-[tool.setuptools]
-package-dir = {"" = "."} 
-packages = ["backend"]
+[tool.setuptools.packages]
+find = {}
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mon-cli"
+name = "millenium-falcon"
 version = "1.0.0"
 dependencies = [
     "typer",
 ]
 
 [project.scripts]
-"give-me-odds" = "backend.cli:cli_entry_point"
+"give-me-odds" = "src.cli:cli_entry_point"

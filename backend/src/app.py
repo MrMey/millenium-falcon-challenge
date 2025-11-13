@@ -6,8 +6,8 @@ from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 
 from .config import config
-from backend.millenium_router import models, loaders, core
-from backend import log_tools
+from .millenium_router import models, loaders, core
+from . import log_tools
 
 logging.basicConfig(
     level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

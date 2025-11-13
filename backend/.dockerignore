@@ -1,0 +1,5 @@
+build/
+requirements.in
+millenium_falcon.egg-info
+.venv_wsl
+__pycache__

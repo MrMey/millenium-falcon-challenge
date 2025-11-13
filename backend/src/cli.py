@@ -3,8 +3,8 @@
 import logging
 import typer
 import sqlite3
-from backend.log_tools import set_all_loggers_level
-from backend.millenium_router import loaders, core
+from .log_tools import set_all_loggers_level
+from .millenium_router import loaders, core
 
 logging.basicConfig(
     level=logging.WARNING, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

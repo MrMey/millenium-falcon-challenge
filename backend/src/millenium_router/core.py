@@ -1,7 +1,6 @@
 import logging
-from functools import lru_cache
 from typing import Iterable, Tuple
-from sqlite3 import Connection, Cursor
+from sqlite3 import Cursor
 
 logger = logging.getLogger(__name__)
 
