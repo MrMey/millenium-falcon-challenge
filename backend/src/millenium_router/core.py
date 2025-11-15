@@ -1,6 +1,7 @@
 import logging
-from typing import Iterable, Tuple
+from typing import Iterable, Tuple, List
 from sqlite3 import Cursor
+from .models import PlanetDay
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +26,15 @@ def get_neighbors_from_db(
     yield from cursor
 
 
-def find_paths(cursor: Cursor, departure, arrival, countdown, autonomy, bounty_hunters):
-    queue = [(((departure, 0),), autonomy, 0)]
+def find_paths(
+    cursor: Cursor,
+    departure: str,
+    arrival: str,
+    countdown: int,
+    autonomy: int,
+    bounty_hunters: set[PlanetDay],
+) -> Tuple[List[PlanetDay], int]:
+    queue = [((PlanetDay(departure, 0),), autonomy, 0)]
 
     min_capture_attempts = 0
     best_path = None
@@ -34,13 +42,13 @@ def find_paths(cursor: Cursor, departure, arrival, countdown, autonomy, bounty_h
 
     while queue:
         planets, fuel, capture_attempts = queue.pop(0)
-        current_planet, day_no = planets[-1]
+        current: PlanetDay = planets[-1]
 
-        if (current_planet, day_no) in bounty_hunters:
+        if current in bounty_hunters:
             capture_attempts += 1
 
-        for neighbor, distance in get_neighbors_from_db(
-            cursor, current_planet, min(fuel, countdown - day_no)
+        for neighbor, travel_time in get_neighbors_from_db(
+            cursor, current.planet, min(fuel, countdown - current.day_num)
         ):
 
             if neighbor == arrival:
@@ -48,13 +56,16 @@ def find_paths(cursor: Cursor, departure, arrival, countdown, autonomy, bounty_h
                     best_path is None
                     or capture_attempts < min_capture_attempts
                     or (
-                        min_days < (day_no + distance)
+                        min_days < (current.day_num + travel_time)
                         and capture_attempts == min_capture_attempts
                     )
                 ):
                     min_capture_attempts = capture_attempts
-                    min_days = day_no + distance
-                    best_path = (*planets, (neighbor, day_no + distance))
+                    min_days = current.day_num + travel_time
+                    best_path = (
+                        *planets,
+                        PlanetDay(neighbor, current.day_num + travel_time),
+                    )
 
                 if capture_attempts == 0:
                     logger.debug("Found a safe path. No need to search more")
@@ -62,23 +73,27 @@ def find_paths(cursor: Cursor, departure, arrival, countdown, autonomy, bounty_h
 
                 continue
 
-            if distance + day_no == countdown:
+            if travel_time + current.day_num == countdown:
                 continue
 
-            logger.debug("will jump to %s in %i day(s)", neighbor, distance)
+            logger.debug("will jump to %s in %i day(s)", neighbor, travel_time)
             queue.append(
                 (
-                    (*planets, (neighbor, day_no + distance)),
-                    fuel - distance,
+                    (*planets, PlanetDay(neighbor, current.day_num + travel_time)),
+                    fuel - travel_time,
                     capture_attempts,
                 )
             )
 
-        if day_no + 1 <= countdown:
+        if current.day_num + 1 <= countdown:
             queue.append(
-                (((*planets, (current_planet, day_no + 1))), autonomy, capture_attempts)
+                (
+                    ((*planets, PlanetDay(current.planet, current.day_num + 1))),
+                    autonomy,
+                    capture_attempts,
+                )
             )
-            logger.debug("will wait in %s", current_planet)
+            logger.debug("will wait in %s", current.planet)
 
     return best_path, min_capture_attempts
 

@@ -1,5 +1,13 @@
-from typing import List
+from typing import List, NamedTuple
 from pydantic import BaseModel
+
+
+class PlanetDay(NamedTuple):
+    planet: str
+    day_num: int
+
+    def __repr__(self):
+        return f"{self.planet}[{self.day_num}]"
 
 
 class BountyHunterPosition(BaseModel):

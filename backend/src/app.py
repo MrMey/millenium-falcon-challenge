@@ -82,19 +82,17 @@ def create_app(config_name):
             return jsonify({"error": "Missing JSON payload"}), 400
 
         try:
-            empire_data = models.Empire(**request.json)
+            countdown, bounty_hunters = loaders.load_empire_data(request.json)
         except pydantic.ValidationError as e:
             validation_errors = e.errors()
             return jsonify({"error": "invalid data", "details": validation_errors}), 400
-
-        bounty_hunters = set((el.planet, el.day) for el in empire_data.bounty_hunters)
 
         conn = get_or_create_db(universe_path)
         odds = core.find_best_path_and_odds(
             conn=conn,
             departure=departure,
             arrival=arrival,
-            countdown=empire_data.countdown,
+            countdown=countdown,
             autonomy=autonomy,
             bounty_hunters=bounty_hunters,
         )

@@ -3,6 +3,7 @@
 import logging
 import typer
 import sqlite3
+import json
 from .log_tools import set_all_loggers_level
 from .millenium_router import loaders, core
 
@@ -34,18 +35,17 @@ def cli_entry_point():
         autonomy, departure, arrival, universe_path = loaders.load_falcon_data(
             falcon_path
         )
-        empire_data = loaders.load_empire_data(empire_path)
+
+        with open(empire_path) as f:
+            empire_data = json.load(f)
+        countdown, bounty_hunters = loaders.load_empire_data(empire_data)
 
         with sqlite3.connect(universe_path) as conn:
-            bounty_hunters = set(
-                (el.planet, el.day) for el in empire_data.bounty_hunters
-            )
-
             odds = core.find_best_path_and_odds(
                 conn=conn,
                 departure=departure,
                 arrival=arrival,
-                countdown=empire_data.countdown,
+                countdown=countdown,
                 autonomy=autonomy,
                 bounty_hunters=bounty_hunters,
             )

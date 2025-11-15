@@ -1,4 +1,29 @@
-from backend.millenium_router.core import compute_odds, find_paths
+import sqlite3
+from src.millenium_router.core import compute_odds, find_paths, get_neighbors_from_db
+
+
+def test_get_neighbors_from_db(test_db_path):
+    with sqlite3.connect(test_db_path) as conn:
+        cursor = conn.cursor()
+
+        results = list(get_neighbors_from_db(cursor, "Dagobah", 6))
+        assert results == [("Endor", 4), ("Hoth", 1)]
+
+
+def test_get_neighbors_from_db_max_distance_filter(test_db_path):
+    with sqlite3.connect(test_db_path) as conn:
+        cursor = conn.cursor()
+
+        results = list(get_neighbors_from_db(cursor, "Dagobah", 3))
+        assert results == [("Hoth", 1)]
+
+
+def test_get_neighbors_from_db_no_content(test_db_path):
+    with sqlite3.connect(test_db_path) as conn:
+        cursor = conn.cursor()
+
+        results = list(get_neighbors_from_db(cursor, "Blabla", 3))
+        assert results == []
 
 
 def test_compute_odds():
